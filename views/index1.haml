@@ -1,0 +1,303 @@
+%noscript <p> JavaScriptが<font color="#FF3333">無効</font>になっています。<br /> 登録文書編集、新規文書登録、検索などを行う際はJavaScriptを有効にしてください。 </p>
+.container-fluid
+  .row
+    %table.layout{:border => "0"}
+      %tbody
+        %tr
+          %td.ltd
+          %td.h1td
+            %h1{:align => "center"} 情報登録・検索システム
+          %td.rtd
+        %tr
+          %td.ltd
+          %td{:align => "right"}
+            %table
+              %tbody
+                %tr
+                  %td{:align => "right"}
+                    %a{:href => "show_user.cgi?id=1"}> admin
+                    さんがログインしています。
+                    %a{:href => "logout.cgi"} ログアウト
+                %tr
+                  %td{:align => "right"}
+                    %a{:href => "editfiles.cgi"} データ管理
+          %td.rtd
+        %tr
+          %td.ltd
+          %td
+            #tabs
+              %ul
+                %li
+                  %a.ltab{:href => "#"} ユーザー管理
+                %li
+                  %a.tab{:href => "#"} ファイル保存設定
+                %li
+                  %a.tab{:href => "#"} バックアップ
+                %li
+                  %a.active.tab{:href => "#"} 関連施設登録
+                %li
+                  %a.tab{:href => "#"} 施設マスターテーブルの管理
+            #content{:style => "display: inline-block; width:100%;"}
+              .col-lg-12.col-md-12.col-xs-12
+                #header
+                  %h3 関連施設登録
+                  .documents
+                    %label{:for => "inf"}
+                      %input#inf{:name => "name", :type => "checkbox", :value => ""}>/
+                      文書情報
+                  %div{style: "display:block;"}
+                    %input{:name => "", :placeholder => "キーワードを入力してください", :size => "30", :type => "text"}/
+                    %label{:for => "in"}
+                      %input#in{:checked => "checked", :name => "name", :type => "radio", :value => "含める"}>/
+                      or
+                    %label{:for => "out"}
+                      %input#out{:name => "name", :type => "radio", :value => "含めない"}>/
+                      and
+                    %button.btn.btn-default{:type => "button"} 検索
+                    %label{:for => "lock"}
+                      %input#lock{:name => "name", :type => "checkbox", :value => ""}>/
+                      ロックを非表示
+                  %a{:href => "#camp", class: "btn btn-default plink"}大学
+                  %a{:href => "#react", class: "btn btn-default plink"}原子力
+                  %a{:href => "#etc", class: "btn btn-default plink"}その他
+
+              %div
+                #zentai{:style => "position:relative; width: 100%; height:500px;"}
+                  %table.table.table-bordered.t#frozon{:style => "width:180px; position:absolute;left:15px;top:150px; "}
+                    %thead#hside
+                      %tr
+                        %td{style: "padding-bottom: 9.99em;"}
+                          %p.vertical 登録ID
+                        %td
+                          %p.vertical PDF
+                  #main.col-lg-9.col-md-9.col-xs-9
+                    %table.table.table-bordered.tdata.t{name: "T"}
+                      %thead#hmain
+                        %tr
+                          - for i in 1..3 do
+                            %td.now
+                              %p.vertical 文書情報 #{i}
+                          - camp_arrs = ["東京大学","武蔵野工業大学","立教大学","近畿大学","京都大学(KUHFR)", "京都大学(KUR)", "京都大学(KUCA)"]
+                          - reac_arrs = ["水均質臨界実験装置(AHCF)","JRR-1","JRR-2","JRR-3", "高温ガス炉(VHTRC))","材料試験炉(JMTR)","軽水炉(TCA)","高速増殖(もんじゅ)","水性均質(AHR)","三菱臨界(MCA)","東芝教育訓練用(TRR-1)","新型転換(ふげん)","安全性研究(NSRR)","定常臨(STACY)","高中性子束炉(KUHFR)","高温工学試験研究炉(HTTR)","動力試験炉(JPDR)","JMTRC","原子力第１船むつ","常陽","DCA"]
+                          - etcs_arrs = ["FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName", "FacilityName"]
+                          - for camp_arr in camp_arrs do
+                            - if camp_arr == camp_arrs.first
+                              %td#camp{:valigh => "top", :width => "1", style: "margin-left: 30px; "}
+                                %p.vertical #{camp_arr}
+                            - else
+                              %td{:valigh => "top", :width => "1"}
+                                %p.vertical #{camp_arr}
+                          - for reac_arr in reac_arrs do
+                            - if reac_arr == reac_arrs.first
+                              %td#react{:valigh => "top", :width => "1", style: "margin-left:17px;"}
+                                %p.vertical #{reac_arr}
+                            - else
+                              %td{:valigh => "top", :width => "1"}
+                                %p.vertical #{reac_arr}
+                          - for etcs_arr in etcs_arrs do
+                            - if etcs_arr == etcs_arrs.first
+                              %td#etc{:valigh => "top", :width => "1", style: "margin-left: 30px;"}
+                                %p.vertical #{etcs_arr}
+                            - else
+                              %td{:valigh => "top", :width => "1"}
+                                %p.vertical #{etcs_arr}
+                  #side.col-lg-2.col-md-2.col-xs-2{name: "TV"}
+                    %table.table.table-bordered
+                      %tbody#tside
+                        - for num in 1..50 do
+                          %tr
+                            %td
+                              %samll #{"2006" + "-" + format("%06d",num)}
+                            %td{style: "width: 88px;"}
+                              %a{:href => "#"}
+                                - dnum = "#{num+38}安第#{num+235}号"
+                                %i.fa.fa-file-pdf-o{"aria-hidden": "true" ,title: dnum}
+
+                  #data.col-lg-9.col-md-9.col-xs-9{name: "T"}
+                    %table.table.table-bordered.tdata.t
+                      %tbody#tmain
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td.rep
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..38 do
+                            %td.rep
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..36 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          - for num in 1..7 do
+                            %td
+                          %td.req
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..31 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          - for num in 1..8 do
+                            %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..30 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          - for num in 1..39 do
+                            %td{style: "height:35.4px;"}
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          - for num in 1..4 do
+                            %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..34 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          %td
+                          - for num in 1..36 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          - for num in 1..3 do
+                            %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..2 do
+                            %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          - for num in 1..32 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          %td
+                          %td
+                          - for num in 1..36 do
+                            %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          - for num in 1..36 do
+                            %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true"}
+                          %td
+                          %td
+                        - for i in 1..40 do
+                          %tr
+                            %td
+                              %i.fa.fa-check{"aria-hidden" => "true"}
+
+                -#right_side_button.col-lg-2.col-md-2.col-xs-2{style: "width:auto;"}
+                  %table.table.table-bordered
+                    %tbody
+                      %tr
+                        %td{:style => "padding-bottom:11em;"}
+                          %p.vertical 編集
+                        %td
+                          %p.vertical ロック
+                      %tr
+                        %td{:style => " padding:0; vertical-align: middle; height:35.4px;"}
+                          .col-lg-6
+                            %button#button.btn.btn-warning.edit{:name => "button", :title => "編集", :type => "button"}
+                              %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
+                        %td{:style => " padding:0; vertical-align: middle;"}
+                          .col-lg-6
+                            %button#button.btn.btn-default.edit{:name => "button", :title => "ロック解除中", :type => "button"}
+                              %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
+                      - for i in 1..9 do
+                        %tr
+                          %td{:style => " padding:0; vertical-align: middle; height:35.4px;"}
+                            .col-lg-6
+                              %button#button.btn.btn-warning.dis{:name => "button", :title => "編集", :type => "button"}
+                                %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
+                          %td{:style => " padding:0; vertical-align: middle;"}
+                            .col-lg-6
+                              %button#button.btn.btn-default.dis{:name => "button", :title => "ロック解除中", :type => "button"}
+                                %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
+              -#pagenate.col-md-12.col-xs-12
+                %nav{:align => "center"}
+                  %ul.pagination
+                    %li.page-item.disabled
+                      %a.page-link{"aria-label" => "Previ ous", :href => "#"}
+                        %span{"aria-hidden" => "true"} «
+                        %span.sr-only Previous
+                    - for i in 1..5 do
+                      - if i == 1
+                        %li.page-item.active
+                          %a.page-link{:href => "#"}
+                            1
+                            %span.sr-only (current)
+                      - else
+                        %li.page-item
+                          %a.page.link{href: '#'}
+                            #{i}
+
+                    %li.page-item
+                      %a.page-link{"aria-label" => "Next", :href => "#"}
+                        %span{"aria-hidden" => "true"} »
+                        %span.sr-only Next
+          %td.rtd
+
+    %form{:action => "/", :method => "post"}
+      #sampleModal.modal.fade{:role => "dialog",:tabindex=>"-1" }
+        .modal-dialog
+          .modal-content
+            .modal-header
+              %button.close{"data-dismiss" => "modal", :type => "button"}
+                %span ×
+              %h4.modal-title 関連施設の登録
+            .modal-body
+              %table.table.table-bordered
+                %tbody
+                  %tr
+                    %td
+                      %p.vertical
+                        %b 登録ID
+                    %td 2006-000001
+                  %tr
+                    %td
+                      %p.vertical
+                        %b 施設名
+                    %td
+                      - for i in 1..5 do
+                        .col-xs-3
+                          %h4
+                            %span.label.label-warning FacilityName #{i}
+            %br/
+            .modal-footer
+              %button.btn.btn-primary{:type => "submit"} OK
+              %button#aho.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+    / layout table
+%script{src: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity: "sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin: "anonymous"}

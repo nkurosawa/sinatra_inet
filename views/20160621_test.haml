@@ -1,0 +1,591 @@
+!!!
+%html{:xmlns => "http://www.w3.org/1999/xhtml"}
+  %head
+    %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}/
+    %title 情報登録・検索システム - ユーザー管理
+    %meta{:content => "text/javascript", "http-equiv" => "Content-Script-Type"}/
+    %meta{:content => "text/css", "http-equiv" => "Content-Style-Type"}/
+
+    %script{:src => "http://code.jquery.com/jquery-2.1.4.min.js"}
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css", :integrity => "sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==", :rel => "stylesheet"}/
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css", :integrity => "sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX", :rel => "stylesheet"}/
+    %link{:href => "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css", :rel => "stylesheet"}/
+    %script{:src => "https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"}
+    %link{:href => "https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css", :rel => "stylesheet"}/
+    %link{:href => "base-design.css", :rel => "stylesheet", :type => "text/css"}/
+    %link{:href => "tab-design.css", :rel => "stylesheet", :type => "text/css"}/
+    %link{:href => "btn-design.css", :rel => "stylesheet", :type => "text/css"}/
+    :javascript
+      // $(function(){
+      //   $("#ach,#rach").on('change',function(){
+      //     $("input[name=ch]").prop("checked",this.checked)
+      //   });
+      //   $(".search").click(function(){
+      //     $("#unrelation").fadeToggle("slow")
+      //   });
+      //   $(".research").click(function(){
+      //     $("#relation").fadeToggle("slow")
+      //   });
+      //   $(".unlock").click(function(){
+      //     $(".none").fadeToggle("slow")
+      //   });
+      // });
+    :javascript
+      $(document).ready(function(){
+        //select2化
+        var op = $('.single').children();
+        var arrsz = [];
+        var sz;
+        for( var i=0; i<op.length; i++ ){
+          arrsz.push(op.eq(i).text().length);
+        }
+        sz = (Math.max.apply(null, arrsz) + 13 + "em");
+        $('.single').select2({
+          placeholder: "関連施設を選択",
+          tags:true,
+          allowClear: true,
+          width: sz,
+          language: "es"
+        });
+        $("#button").click(function () {
+
+          $(this).replaceWith("<td><button type='button' class='btn btn-success'  data-toggle='modal' data-target='#sampleModal'>更新</button></td> ");
+          $(".rep").replaceWith("<td  style='height:39px  ;'><input type='checkbox' name='name' value=''></td> ");
+          $(".dis").prop("disabled", true);
+        });
+        $('#inf').click(function(){
+          //$(".now").slideToggle('slow');
+          // $(".now").show( 'slide', {direction:'left'} );
+          $(".now").animate({width: 'toggle'}, 'slow');
+        });
+        $('#aho').click(function() { location.reload(); });
+
+        // if ($("#inf:checked").val()) {
+        //   $(".now").animate({width: 'show'}, 'slow');
+        // }
+      });
+    :css
+      .now{
+        display: none;
+      }
+      .vertical{
+        -webkit-writing-mode: vertical-rl;
+        writing-mode: vertical-rl;
+        height: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hoge{
+        width: 1px;
+      }
+      .maintable th{
+        vertical-align: top;
+        width: 120px;
+        padding: 8px;
+      }
+      .maintable td {
+        vertical-align: top;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 8px;
+      }
+      .maintable td textarea{
+        width: 38em;
+        font-size: small;
+      }
+      .maintable td p{
+        padding: 0px;
+        margin:0px;
+        font-family: "ＭＳ ゴシック", "Osaka－等幅";
+      }
+      .search-button {
+        margin-top: 8px;
+      }
+      .style2 {
+        font-size: medium;
+        color: #FF0000;
+      }
+      .variableTable {
+        border:thin solid #0099FF;
+        border-collapse:collapse;
+        margin-top: 0.5em;
+      }
+      .variableTable td{
+        border:1px solid #000000;
+        padding: 0.5em;
+        text-align:center;
+        vertical-align: middle;
+      }
+      .variableTable .text-box{
+        width: 360px;
+      }
+      .variableTable .select-file{
+        width: 365px;
+      }
+      .variableTableValRow select{
+        width: 22em;
+      }
+      .uploadTable {
+        border:thin solid #0099FF;
+        border-collapse:collapse;
+        margin-top: 0.5em;
+      }
+      .uploadTable td{
+        padding: 0.5em;
+      }
+      .uploadTable .col0{
+        text-align:right;
+        vertical-align: middle;
+      }
+      .uploadTable .text-box{
+        width: 360px;
+      }
+      .uploadTable .select-file{
+        width: 420px;
+      }
+  %body
+    %noscript <p> JavaScriptが<font color="#FF3333">無効</font>になっています。<br /> 登録文書編集、新規文書登録、検索などを行う際はJavaScriptを有効にしてください。 </p>
+    .container-fluid
+      .row
+        %table.layout{:border => "0"}
+          %tbody
+            %tr
+              %td.ltd
+              %td.h1td
+                %h1{:align => "center"} 情報登録・検索システム
+              %td.rtd
+            %tr
+              %td.ltd
+              %td{:align => "right"}
+                %table
+                  %tbody
+                    %tr
+                      %td{:align => "right"}
+                        %a{:href => "show_user.cgi?id=1"}> admin
+                        さんがログインしています。
+                        %a{:href => "logout.cgi"} ログアウト
+                    %tr
+                      %td{:align => "right"}
+                        %a{:href => "editfiles.cgi"} データ管理
+              %td.rtd
+            %tr
+              %td.ltd
+              %td
+                #tabs
+                  %ul
+                    %li
+                      %a.ltab{:href => "#"} ユーザー管理
+                    %li
+                      %a.tab{:href => "#"} ファイル保存設定
+                    %li
+                      %a.tab{:href => "#"} バックアップ
+                    %li
+                      %a.active.tab{:href => "#"} 関連施設登録
+                    %li
+                      %a.tab{:href => "#"} 施設マスターテーブルの管理
+                #content{:style => "display: inline-block;"}
+                  #header
+                    %h3 関連施設登録
+                    %div
+                      %input{:name => "", :placeholder => "キーワードを入力してください", :size => "30", :type => "text"}/
+                      %label{:for => "in"}
+                        %input#in{:checked => "checked", :name => "name", :type => "radio", :value => "含める"}>/
+                        or
+                      %label{:for => "out"}
+                        %input#out{:name => "name", :type => "radio", :value => "含めない"}>/
+                        and
+                      %button.btn.btn-default{:type => "button"} 検索
+                    .documents
+                      %label{:for => "inf"}
+                        %input#inf{:name => "name", :type => "checkbox", :value => ""}>/
+                        文書情報
+                    .reac
+                      %label{:for => "reac"}
+                        %input#reac{:name => "name", :type => "checkbox", :value => ""}>/
+                        原子炉
+                    .camp
+                      %label{:for => "camp"}
+                        %input#camp{:name => "name", :type => "checkbox", :value => ""}>/
+                        大学
+                    .etc
+                      %label{:for => "etc"}
+                        %input#etc{:name => "name", :type => "checkbox", :value => ""}>/
+                        その他
+                  #side.col-lg-2.col-md-2.col-xs-2
+                    %table.table.table-bordered
+                      %tr
+                        %td{:style => "padding-bottom:9.9em;"}
+                          %p.vertical 登録ID
+                        %td{:style => "padding-bottom:9.9em;"}
+                          %p.vertical PDF
+                      %tr
+                        %td
+                          %small 2006-000001
+                        %td
+                          %a{:href => "#"}
+                            %small 38安第235号
+                      %tr
+                        %td 2006-000002
+                        %td
+                          %a{:href => "#"} 12安第XXX号
+                      %tr
+                        %td 2006-000003
+                        %td
+                          %a{:href => "#"} 50安第XXX号
+                      %tr
+                        %td 2006-000004
+                        %td
+                          %a{:href => "#"} 45安第XXX号
+                      %tr
+                        %td 2006-000005
+                        %td
+                          %a{:href => "#"} 3安第XXX号
+                      %tr
+                        %td 2006-000006
+                        %td
+                          %a{:href => "#"} 23安第XXX号
+                      %tr
+                        %td 2006-000007
+                        %td
+                          %a{:href => "#"} 61安第XXX号
+                      %tr
+                        %td 2006-000008
+                        %td
+                          %a{:href => "#"} 44安第XXX号
+                      %tr
+                        %td 2006-000009
+                        %td
+                          %a{:href => "#"} 44安第XXX号
+                      %tr
+                        %td 2006-000010
+                        %td
+                          %a{:href => "#"} 47安第XXX号
+                  #main.col-lg-9.col-md-9.col-xs-9{:style => " margin-left: -31px; margin-right: -30px;"}
+                    %table.table.table-bordered{:style => "padding:0;display: inline-block; overflow-x: auto; border-left: 0;border-top: 0; border-right:0; background:#fff"}
+                      %tbody
+                        %tr
+                          %td.now
+                            %p.vertical 文書情報 1
+                          %td.now
+                            %p.vertical 文書情報 2
+                          %td.now
+                            %p.vertical 文書情報 3
+                          %td{:valigh => "top", :width => "1"}
+                            %p.vertical 東京大学
+                          %td{:width => "1"}
+                            %p.vertical 武蔵工業大学
+                          %td{:width => "1"}
+                            %p.vertical 立教大学
+                          %td{:width => "1"}
+                            %p.vertical 近畿大学
+                          %td{:width => "1"}
+                            %p.vertical 京都大学(KUHFR)
+                          %td{:width => "1"}
+                            %p.vertical 京都大学(KUR)
+                          %td{:width => "1"}
+                            %p.vertical 京都大学(KUCA)
+                          %td{:width => "1"}
+                            %p.vertical 水均質臨海実験装置(AHCF)
+                          %td{:width => "1"}
+                            %p.vertical FacilityName1
+                          %td{:width => "1"}
+                            %p.vertical FacilityName2
+                          %td{:width => "1"}
+                            %p.vertical FacilityName3
+                          %td{:width => "1"}
+                            %p.vertical FacilityName4
+                          %td{:width => "1"}
+                            %p.vertical FacilityName5
+                          %td{:width => "1"}
+                            %p.vertical FacilityName6
+                          %td{:width => "1"}
+                            %p.vertical FacilityName7
+                          %td{:width => "1"}
+                            %p.vertical FacilityName8
+                          %td{:width => "1"}
+                            %p.vertical FacilityName9
+                          %td{:width => "1"}
+                            %p.vertical FacilityName10
+                          %td{:width => "1"}
+                            %p.vertical FacilityName11
+                          %td{:width => "1"}
+                            %p.vertical FacilityName12
+                          %td{:width => "1"}
+                            %p.vertical FacilityName13
+                          %td{:width => "1"}
+                            %p.vertical FacilityName14
+                          %td{:width => "1"}
+                            %p.vertical FacilityName15
+                          %td{:width => "1"}
+                            %p.vertical FacilityName16
+                          %td{:width => "1"}
+                            %p.vertical FacilityName17
+                          %td{:width => "1"}
+                            %p.vertical FacilityName18
+                          %td{:width => "1"}
+                            %p.vertical FacilityName19
+                          %td{:width => "1"}
+                            %p.vertical FacilityName20
+                          %td{:width => "1"}
+                            %p.vertical FacilityName21
+                          %td{:width => "1"}
+                            %p.vertical FacilityName22
+                          %td{:width => "1"}
+                            %p.vertical FacilityName23
+                          %td{:width => "1"}
+                            %p.vertical FacilityName24
+                          %td{:width => "1"}
+                            %p.vertical FacilityName25
+                          %td{:width => "1"}
+                            %p.vertical FacilityName26
+                          %td{:width => "1"}
+                            %p.vertical FacilityName27
+                          %td{:width => "1"}
+                            %p.vertical FacilityName28
+                          %td{:width => "1"}
+                            %p.vertical FacilityName29
+                          %td{:width => "1"}
+                            %p.vertical FacilityName30
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td.rep{:style => ""}
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                          %td.rep
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => "height:39px;"}
+                          %td{:style => ""}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td
+                          %td
+                          %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td
+                          %td
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                        %tr
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 1
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 2
+                          %td.now{:style => "white-space:nowrap;"} sample文書情報 3
+                          %td{:style => ""}
+                          %td
+                          %td
+                            %i.fa.fa-check{"aria-hidden" => "true", :style => "padding:3px;"}
+                          %td
+                          %td
+                          %td
+                          %td
+                          %td
+                  #right_side_button.col-lg-1.col-md-1.col-xs-1
+                    %table.table.table-bordered
+                      %tbody
+                        %tr
+                          %td{:style => "padding-bottom:10.9em;"}
+                            %p.vertical 編集
+                          %td
+                            %p.vertical ロック
+                        %tr
+                          %td{:style => " padding:0; vertical-align: middle; height:39px;"}
+                            .col-lg-6
+                              %button#button.btn.btn-warning.edit{:name => "button", :title => "編集", :type => "button"}
+                                %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
+                          %td{:style => " padding:0; vertical-align: middle;"}
+                            .col-lg-6
+                              %button#button.btn.btn-default.edit{:name => "button", :title => "ロック解除中", :type => "button"}
+                                %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
+                  #pagenate.col-md-12.col-xs-12
+                    %nav{:align => "center"}
+                      %ul.pagination
+                        %li.page-item.disabled
+                          %a.page-link{"aria-label" => "Previ ous", :href => "#"}
+                            %span{"aria-hidden" => "true"} «
+                            %span.sr-only Previous
+                        %li.page-item.active
+                          %a.page-link{:href => "#"}
+                            1
+                            %span.sr-only (current)
+                        %li.page-item
+                          %a.page-link{:href => "#"} 2
+                        %li.page-item
+                          %a.page-link{:href => "#"} 3
+                        %li.page-item
+                          %a.page-link{:href => "#"} 4
+                        %li.page-item
+                          %a.page-link{:href => "#"} 5
+                        %li.page-item
+                          %a.page-link{"aria-label" => "Next", :href => "#"}
+                            %span{"aria-hidden" => "true"} »
+                            %span.sr-only Next
+              / 中央セル
+              %td.rtd
+              / 右スペース
+            / メイン行
+        / モーダル・ダイアログ
+        %form{:action => "20160621_test.html", :method => "post"}
+          #sampleModal.modal.fade{:tabindex => "-1"}
+            .modal-dialog
+              .modal-content
+                .modal-header
+                  %button.close{"data-dismiss" => "modal", :type => "button"}
+                    %span ×
+                  %h4.modal-title 関連施設の登録
+                .modal-body
+                  %table.table.table-bordered
+                    %tbody
+                      %tr
+                        %td
+                          %p.vertical
+                            %b 登録ID
+                        %td 2006-000001
+                      %tr
+                        %td
+                          %p.vertical
+                            %b 施設名
+                        %td
+                          .col-xs-3
+                            %h4
+                              %span.label.label-warning FacilityName 1
+                          .col-xs-3
+                            %h4
+                              %span.label.label-warning FacilityName 2
+                          .col-xs-3
+                            %h4
+                              %span.label.label-warning FacilityName 3
+                          .col-xs-3
+                            %h4
+                              %span.label.label-warning FacilityName 4
+                          .col-xs-3
+                            %h4
+                              %span.label.label-warning FacilityName 5
+                %br/
+                .modal-footer
+                  %button.btn.btn-primary{:type => "submit"} OK
+                  %button#aho.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+        / layout table
+    %script{:crossorigin => "anonymous", :integrity => "sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==", :src => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"

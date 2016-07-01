@@ -1,0 +1,104 @@
+<style type="text/css">
+/* 基本のテーブル定義 */
+table.t {border:1px solid   #000000;border-collapse:collapse;table-layout:fixed;font-size:16px}
+table.t td{border:1px solid #000000;height:16px;}
+table.t th{border:1px solid #000000;font-size:16px}
+table.t th{background-color:#FFBB88;color:#000000;}
+table.t tr:nth-child(odd)  td{background-color:#C8C8E8;color:#000000;}
+table.t tr:nth-child(even) td{background-color:#E8E8FF;color:#000000;}
+/*
+  データ域        90×3+110 = 380
+  ＋スクロール域  +16       = 396
+  ＋垂直ヘッダ    +90       = 486
+  スクロール範囲      (w×h) 280×130
+  バー付データ部サイズ(w×h) 296×145  (バー　v16:h15)
+  ヘッダを含むサイズ  (w×h) 386×167  (ヘッダ１行18px)
+ */
+[name="T"] {width:360px;}
+[name="T"]  th{width:90px}
+[name="T"]  td{width:90px}
+[name="T"]  th:nth-child(4){width:110px}
+[name="T"]  td:nth-child(4){width:110px}
+[name="TV"] th{width:90px}
+
+#header_h {
+   position: absolute;left:90px;top:0px;
+   width:280px;
+   overflow-x:hidden;overflow-y:hidden;
+   }
+#header_v {
+   position: absolute;left:0px;top:22px;
+   width:90px;height:130px;
+   overflow-x:hidden;overflow-y:hidden;
+   }
+#data {
+   position: absolute;left:90px;top:22px;
+   overflow-x:scroll;overflow-y:scroll;
+   width:296px;height:145px;
+   }
+</style>
+</head>
+<body>
+
+<div id="zentai" style="position:relative;width:386px;height:167px;
+                       background-color:#CCCCCC;border:1px solid #000000">
+<table class=t  style="width:90px;position:absolute;left:0px;top:0px;">
+<tr><th>原子番号</th></tr> <!-- 固定ヘッダ -->
+</table>
+
+<div id="header_h">
+<table class=t name="T"> <!-- 水平ヘッダ -->
+<tr>
+<th>元素</th>
+<th>英語</th>
+<th>記号</th>
+<th>原子量</th>
+</tr>
+</table>
+</div>
+
+<div id="header_v">
+<table class=t name="TV"> <!-- 垂直ヘッダ -->
+<tr><th>1</th></tr>
+<tr><th>2</th></tr>
+<tr><th>3</th></tr>
+<tr><th>4</th></tr>
+<tr><th>5</th></tr>
+<tr><th>6</th></tr>
+<tr><th>7</th></tr>
+<tr><th>8</th></tr>
+<tr><th>9</th></tr>
+<tr><th>10</th></tr>
+<tr><th>11</th></tr>
+<tr><th>12</th></tr>
+<tr><th>13</th></tr>
+</table>
+</div>
+
+<div id="data">
+<table class=t name="T">
+<tr><td>水素</td>      <td>Hydrogen</td> <td>H</td> <td>1.00794 (7)</td></tr>
+<tr><td>ヘリウム</td>  <td>Helium</td>   <td>He</td><td>4.002603 (2)</td></tr>
+<tr><td>リチウム</td>  <td>Lithium</td>  <td>Li</td><td>[6.941 (2)]</td></tr>
+<tr><td>ベリリウム</td><td>Helirm</td>   <td>Be</td><td>9.012182 (3)</td></tr>
+<tr><td>ホウ素</td>    <td>Boron</td>    <td>B</td> <td>10.811 (7)</td></tr>
+<tr><td>炭素</td>      <td>Carbon</td>   <td>C</td> <td>12.0107 (8)</td></tr>
+<tr><td>窒素</td>      <td>Nitorogen</td><td>N</td> <td>14.0067 (2)</td></tr>
+<tr><td>酸素</td>      <td>Oxygen</td>   <td>O</td> <td>15.9994 (3)</td></tr>
+<tr><td>フッ素</td>    <td>Fluorine</td> <td>F</td> <td>18.9984032 (5)</td></tr>
+<tr><td>ネオン</td>    <td>Neon</td>     <td>Ne</td><td>20.1797</td></tr>
+<tr><td>ナトリウム</td><td>Sodium</td>   <td>Na</td><td>22.98976928 (2)</td></tr>
+<tr><td>マグネシウム</td><td>Magnesium</td><td>Mg</td> <td>24.3050 (6)</td></tr>
+<tr><td>アルミニウム</td><td>Alminium</td><td>Al</td><td>26.9815386 (8)</td></tr>
+</table>
+</div>
+
+</div>
+<script type="text/javascript">
+function $E(name){ return document.getElementById(name); }
+function scroll(){
+   $E("header_h").scrollLeft= $E("data").scrollLeft;// データ部のスクロールをヘッダに反映
+   $E("header_v").scrollTop = $E("data").scrollTop;// データ部のスクロールをヘッダに反映
+   }
+$E("data").onscroll=scroll;
+</script>

@@ -1,0 +1,156 @@
+%head
+  :css
+    /* 基本のテーブル定義 */
+    table.t {border:1px solid   #000000;border-collapse:collapse;table-layout:fixed;font-size:16px}
+    table.t td{border:1px solid #000000;height:16px;}
+    table.t th{border:1px solid #000000;font-size:16px}
+    table.t th{background-color:#FFBB88;color:#000000;}
+    table.t tr:nth-child(odd)  td{background-color:#C8C8E8;color:#000000;}
+    table.t tr:nth-child(even) td{background-color:#E8E8FF;color:#000000;}
+    /*
+      データ域        90×3+110 = 380
+      ＋スクロール域  +16       = 396
+      ＋垂直ヘッダ    +90       = 486
+      スクロール範囲      (w×h) 280×130
+      バー付データ部サイズ(w×h) 296×145  (バー　v16:h15)
+      ヘッダを含むサイズ  (w×h) 386×167  (ヘッダ１行18px)
+     */
+    [name="T"] {width:360px;}
+    [name="T"]  th{width:90px}
+    [name="T"]  td{width:90px}
+    [name="T"]  th:nth-child(4){width:110px}
+    [name="T"]  td:nth-child(4){width:110px}
+    [name="TV"] th{width:90px}
+
+    #header_h {
+       position: absolute;left:90px;top:0px;
+       width:280px;
+       overflow-x:hidden;overflow-y:hidden;
+       }
+    #header_v {
+       position: absolute;left:0px;top:22px;
+       width:90px;height:130px;
+       overflow-x:hidden;overflow-y:hidden;
+       }
+    #data {
+       position: absolute;left:90px;top:22px;
+       overflow-x:scroll;overflow-y:scroll;
+       width:296px;height:145px;
+       }
+%body
+  #zentai{:style => "position:relative;width:386px;height:167px;\r\n                       background-color:#CCCCCC;border:1px solid #000000"}
+    %table.t{:style => "width:90px;position:absolute;left:0px;top:0px;"}
+      %tr
+        %th 原子番号
+      / 固定ヘッダ
+    #header_h
+      %table.t{:name => "T"}
+        / 水平ヘッダ
+        %tr
+          %th 元素
+          %th 英語
+          %th 記号
+          %th 原子量
+    #header_v
+      %table.t{:name => "TV"}
+        / 垂直ヘッダ
+        %tr
+          %th 1
+        %tr
+          %th 2
+        %tr
+          %th 3
+        %tr
+          %th 4
+        %tr
+          %th 5
+        %tr
+          %th 6
+        %tr
+          %th 7
+        %tr
+          %th 8
+        %tr
+          %th 9
+        %tr
+          %th 10
+        %tr
+          %th 11
+        %tr
+          %th 12
+        %tr
+          %th 13
+    #data
+      %table.t{:name => "T"}
+        %tr
+          %td 水素
+          %td Hydrogen
+          %td H
+          %td 1.00794 (7)
+        %tr
+          %td ヘリウム
+          %td Helium
+          %td He
+          %td 4.002603 (2)
+        %tr
+          %td リチウム
+          %td Lithium
+          %td Li
+          %td [6.941 (2)]
+        %tr
+          %td ベリリウム
+          %td Helirm
+          %td Be
+          %td 9.012182 (3)
+        %tr
+          %td ホウ素
+          %td Boron
+          %td B
+          %td 10.811 (7)
+        %tr
+          %td 炭素
+          %td Carbon
+          %td C
+          %td 12.0107 (8)
+        %tr
+          %td 窒素
+          %td Nitorogen
+          %td N
+          %td 14.0067 (2)
+        %tr
+          %td 酸素
+          %td Oxygen
+          %td O
+          %td 15.9994 (3)
+        %tr
+          %td フッ素
+          %td Fluorine
+          %td F
+          %td 18.9984032 (5)
+        %tr
+          %td ネオン
+          %td Neon
+          %td Ne
+          %td 20.1797
+        %tr
+          %td ナトリウム
+          %td Sodium
+          %td Na
+          %td 22.98976928 (2)
+        %tr
+          %td マグネシウム
+          %td Magnesium
+          %td Mg
+          %td 24.3050 (6)
+        %tr
+          %td アルミニウム
+          %td Alminium
+          %td Al
+          %td 26.9815386 (8)
+  :javascript
+    function $E(name){ return document.getElementById(name); }
+    function scroll(){
+       $E("header_h").scrollLeft= $E("data").scrollLeft;// データ部のスクロールをヘッダに反映
+       $E("header_v").scrollTop = $E("data").scrollTop;// データ部のスクロールをヘッダに反映
+       }
+    $E("data").onscroll=scroll;

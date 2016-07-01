@@ -1,0 +1,191 @@
+!!! 5
+%html
+  %head
+    %meta{ 'http-equiv' => 'content', :content => 'IE=11; text/html; charset=utf-8'}
+    %title 情報登録・検索システム - ユーザー管理
+    %script{:src => "http://code.jquery.com/jquery-2.1.4.min.js"}
+    %script{:src => "https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.6.11/js/min/perfect-scrollbar.jquery.min.js"}
+    %script{src: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity: "sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin: "anonymous"}
+
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css", :integrity => "sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==", :rel => "stylesheet"}/
+    %link{:crossorigin => "anonymous", :href => "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css", :integrity => "sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX", :rel => "stylesheet"}/
+    %link{:href  => "https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css", :rel => "stylesheet"}/
+    %link{:href  => "https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.6.11/css/perfect-scrollbar.min.css", :rel => "stylesheet"}/
+
+    %link{:href => "/css/base-design.css", :rel => "stylesheet", :type => "text/css"}/
+    %link{:href => "/css/tab-design.css", :rel => "stylesheet", :type => "text/css"}/
+    %link{:href => "/css/btn-design.css", :rel => "stylesheet", :type => "text/css"}/
+
+    :javascript
+      $(document).ready(function(){
+        // スクロールバー
+        $('#data').perfectScrollbar();
+
+        // 編集ボタンの制御
+        $("#button").click(function () {
+          $(this).replaceWith("<td><button type='button' class='btn btn-success btn-xs' data-toggle='modal' data-target='#sample' title='更新'><i class='fa fa-refresh'   aria-hidden='true'></button></td> ");
+          if ($("#data table tr td i").get(0)){
+            $(".rep").replaceWith("<td  style='padding-right: 14px; padding-top:13px; background: #fff; vertical-align:middle;'><input style='margin: 0px !important;' type='checkbox' name='name' value=''></td> ");
+          }else{
+            $(".rep").replaceWith("<td  style='padding-right: 14px; padding-top:13px; background: #fff; vertical-align:middle;'><input style='margin: 0px !important;' type='checkbox' name='name' value='' checked></td> ");
+          }
+          $(".dis").prop("disabled", true);
+        });
+        // ロックボタンの制御
+        $(".lock").click(function () {
+          $(this).replaceWith("<td><button type='button' class='btn btn-default btn-xs' data-toggle='modal' data-target='#sampleModal' title='ロックされています。'><i class='fa fa-lock' aria-hidden='true'></button></td>  ");
+          $("#button").prop("disabled", true);
+          $(".hoge").prop("disabled", true);
+        });
+        $('#inf').click(function(){
+          //$(".now").slideToggle('slow');
+          // $(".now").show( 'slide', {direction:'left'} );
+          $(".now").animate({width: 'toggle'}, 'slow');
+        });
+        $('#aho').click(function() { location.reload(); });
+
+        // if ($("#inf:checked").val()) {
+        //   $(".now").animate({width: 'show'}, 'slow');
+        // }
+      });
+      $(function(){
+          $("table.tdata tbody td").hover(function() {
+              var idx = $(this).index() + 1
+              var tds = $(this).closest("table.tdata").find("td:nth-child(" + idx + ")");
+              tds.css("background-color"," #eee");
+              $(this).css("background-color","#696");
+              $(this).siblings().css('background', ' #eee');
+          }, function() {
+              var idx = $(this).index() + 1
+              var tds = $(this).closest("table.tdata").find("td:nth-child(" + idx + ")");
+              tds.css("background-color","#fff");
+              $(this).css("background-color","#fff");
+              $(this).siblings().css('background', '#fff');
+          });
+      });
+      $(function(){
+        $('.plink').click(function(){
+          var href= $(this).attr("href");
+          targetX = href == "#camp" ? $(href).position().left : $(href).position().left + 17;
+          $('#data').animate({scrollLeft: targetX});
+          $(href).toggleClass("active");
+          return false;
+        });
+      });
+
+    :css
+
+      #main {
+         position: absolute;
+         left:180px;
+         top:150px;
+         width:1100px;
+         overflow-x:hidden;
+         overflow-y:hidden;
+         }
+      #side {
+         position: absolute;
+         left:0px;
+         top:26em;
+         width:auto;
+         height:200px;
+         overflow-x:hidden;
+         overflow-y:hidden;
+         }
+      table.tdata:hover tbody td {
+          color: #000;
+      }
+      table.tdata:hover tbody tr:hover td {
+          background: #cef;
+      }
+      table.tdata:hover tbody tr:hover td {
+          background: #eee;
+      }
+      table.tdata:hover tbody:hover td:hover {
+          opacity: 1;
+          color: #fff;
+          background: #696
+      }
+      .now{
+        display: none;
+      }
+      .vertical{
+        -webkit-writing-mode: vertical-rl;
+        writing-mode: vertical-rl;
+        height: auto;
+        -ms-height: 13em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -ms-writing-mode: tb-rl
+      }
+      .hoge{
+        width: 1px;
+      }
+      .maintable th{
+        vertical-align: top;
+        width: 120px;
+        padding: 8px;
+      }
+      .maintable td {
+        vertical-align: top;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 8px;
+      }
+      .maintable td textarea{
+        width: 38em;
+        font-size: small;
+      }
+      .maintable td p{
+        padding: 0px;
+        margin:0px;
+        font-family: "ＭＳ ゴシック", "Osaka－等幅";
+      }
+      .search-button {
+        margin-top: 8px;
+      }
+      .style2 {
+        font-size: medium;
+        color: #FF0000;
+      }
+      .variableTable {
+        border:thin solid #0099FF;
+        border-collapse:collapse;
+        margin-top: 0.5em;
+      }
+      .variableTable td{
+        border:1px solid #000000;
+        padding: 0.5em;
+        text-align:center;
+        vertical-align: middle;
+      }
+      .variableTable .text-box{
+        width: 360px;
+      }
+      .variableTable .select-file{
+        width: 365px;
+      }
+      .variableTableValRow select{
+        width: 22em;
+      }
+      .uploadTable {
+        border:thin solid #0099FF;
+        border-collapse:collapse;
+        margin-top: 0.5em;
+      }
+      .uploadTable td{
+        padding: 0.5em;
+      }
+      .uploadTable .col0{
+        text-align:right;
+        vertical-align: middle;
+      }
+      .uploadTable .text-box{
+        width: 360px;
+      }
+      .uploadTable .select-file{
+        width: 420px;
+      }
+  %body
+    = yield
