@@ -14,11 +14,11 @@ class App < Sinatra::Base
     haml :index_2
   end
 
-  # get '/1' do
-  #   haml :index1
-  # end
-  # get '/3' do
-  #   haml :index_3
-  # end
+  get '/1' do
+    haml :index1
+  end
+  get '/3' do
+    haml :index_3
+  end
 
 end

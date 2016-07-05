@@ -3,8 +3,6 @@
     /* 基本のテーブル定義 */
     table.t {border-collapse:collapse;}
     /*table.t td{border:1px solid #000000;height:16px;}*/
-    table.t th{border:1px solid #000000;font-size:16px}
-    table.t th{background-color:#FFBB88;color:#000000;}
     /*
       データ域        90×3+110 = 380
       ＋スクロール域  +16       = 396
@@ -17,41 +15,36 @@
     #content{
       display: inline-block;
     }
-    #header_h,#header_v, .t, #data{
+    #header_l,#header_c,#header_r,#data_l, #data_c, #data_r, .t{
       margin-bottom: 0;
     }
-    #zentai,#frozen,#header_h,#header_v, .t, #data{
+    #zentai,#header_l,#header_c,#data_l, .t, #data_c{
       padding: 0;
     }
-    #frozen{
+    #header_l{
       position:relative;
       }
-    #frozen table tbody tr td{
-      height: 188px;
-    }
-    #header_h {
+    #header_c {
        position: relative;
        overflow-x:hidden;
        overflow-y:hidden;
        margin-bottom: 1px;
        }
-    #right_side{
-       position: relative;
-       left: 85em;
-       overflow-x:hidden;
-       overflow-y:hidden;    }
-    #header_v {
+    #data_l,#data_r {
        position: relative;
        left:0;
-       height:455px;
+       height:460px;
        overflow-x:hidden;
        overflow-y:hidden;
        }
-    #data {
+    #header_r, #data_r{
+      padding: 0 5px;
+    }
+    #data_c {
        position: relative;
        overflow-x:hidden;
        overflow-y:hidden;
-       height:455px;
+       height:460px;
        padding: 0;
     }
     .active{
@@ -63,21 +56,33 @@
       *::-ms-backdrop, .vertical {
         padding-bottom: 0px !important;
       }
-      *::-ms-backdrop, #header_h, #frozen {
+      *::-ms-backdrop, #header_c, #header_l {
         height: 210px;
       }
     }
 
     /* edge用 */
     @supports (-ms-accelerator:true) {
-      #header_h {
+      #header_c {
         height: 210px;
       }
-      #frozen {
+      #header_l {
         height: 210px;
         border-bottom: 0;
       }
      }
+    #hack_hr{
+      margin-top: 10px;
+      margin-bottom: 30px;
+      border: 0;
+      border-top: 1px solid #fff;
+      width: 88%;
+    }
+    #buttin_l{
+      position: absolute;
+      display: inline-block;
+      top: -30px;
+    }
 
 %noscript <p> JavaScriptが<font color="#FF3333">無効</font>になっています。<br /> 登録文書編集、新規文書登録、検索などを行う際はJavaScriptを有効にしてください。 </p>
 .container-fluid
@@ -118,13 +123,9 @@
                   %a.active.tab{:href => "#"} 関連施設登録
                 %li
                   %a.tab{:href => "#"} 施設マスターテーブルの管理
-            #content
-              #header
+            #content{style: "width:100%; height: 100%;"}
+              #search
                 %h3 関連施設登録
-                .documents
-                  %label{:for => "inf"}
-                    %input#inf{:name => "name", :type => "checkbox", :value => ""}>/
-                    文書情報
                 %div{style: "display:block;"}
                   %input{:name => "", :placeholder => "キーワードを入力してください", :size => "30", :type => "text"}/
                   %label{:for => "in"}
@@ -134,138 +135,210 @@
                     %input#out{:name => "name", :type => "radio", :value => "含めない"}>/
                     and
                   %button.btn.btn-default{:type => "button"} 検索
+                %div.check{style: "display: block;"}
                   %label{:for => "lock"}
                     %input#lock{:name => "name", :type => "checkbox", :value => ""}>/
                     ロックを非表示
-                %a{:href => "#camp", class: "btn btn-default plink"}大学
-                %a{:href => "#react", class: "btn btn-default plink"}原子力
-                %a{:href => "#etc", class: "btn btn-default plink"}その他
-
-              .col-lg-12#zentai{style: "display: block; margin-top: 1em;"}
-                .col-lg-3.col-sm-3.col-md-3.col-xs-3#frozen
-                  %table.table.table-bordered.t
-                    %tr
-                      %td.col-lg-2.col-sm-2.col-md-2.col-xs-2
-                        %p.vertical 編集
-                      %td.col-lg-2.col-sm-2.col-md-2.col-xs-2
-                        %p.vertical ロック
-                      %td.col-lg-6.col-sm-6.col-md-6.col-xs-6
-                        %p.vertical 登録ID
-                      %td.col-lg-2.col-sm-2.col-md-2.col-xs-2
-                        %p.vertical PDF
-                .col-lg-8.col-sm-9.col-md-9.col-xs-9#header_h
-                  %table.table.table-bordered.t.tdata.pscroll{:name => "T"}
-                    %thead
+                  %label{:for => "inf"}
+                    %input#inf.noactive{:name => "name", :type => "checkbox", :value => ""}>/
+                    文書情報
+                %hr#hack_hr
+              %i.fa.fa-spinner.fa-pulse.fa-5x.fa-fw#load{style: "position: absolute;top: 9em;left: 11em;z-index: 10000;"}
+              #zentai.col-lg-12{style: "display:none; margin-top: 1em; "}
+                -# ヘッダー部
+                .row{style: "margin: 0;"}
+                  #header_l.col-lg-3.col-sm-3.col-md-3.col-xs-3
+                    %table.table.table-bordered.t
                       %tr
-                        - camp_arrs = ["東京大学","武蔵野工業大学","立教大学","近畿大学","京都大学(KUHFR)", "京都大学(KUR)", "京都大学(KUCA)"]
-                        - reac_arrs = ["水均質臨界実験装置(AHCF)","JRR-1","JRR-2","JRR-3", "高温ガス炉(VHTRC))","材料試験炉(JMTR)","軽水炉(TCA)","高速増殖(もんじゅ)","水性均質(AHR)","三菱臨界(MCA)","東芝教育訓練用(TRR-1)","新型転換(ふげん)","安全性研究(NSRR)","定常臨(STACY)","高中性子束炉(KUHFR)","高温工学試験研究炉(HTTR)","動力試験炉(JPDR)","JMTRC","原子力第１船むつ","常陽","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA"]
-                        - for camp_arr in camp_arrs do
-                          - if camp_arr == camp_arrs.first
-                            %td#camp{:valigh => "top", :width => "1",style: "padding-right: 9px;"}
-                              %p.vertical #{camp_arr}
-                          - else
-                            %td{:valigh => "top", :width => "1",style: "padding-right: 9px;"}
-                              %p.vertical #{camp_arr}
-                        - for reac_arr in reac_arrs do
-                          - if reac_arr == reac_arrs.first
-                            %td#react{:valigh => "top", :width => "1", style: "margin-left:17px; padding-right: 9px;"}
-                              %p.vertical #{reac_arr}
-                          - else
-                            %td{:valigh => "top", :width => "1",style: "padding-right: 9px;"}
-                              %p.vertical #{reac_arr}
-                .col-lg-3.col-sm-3.col-md-3.col-xs-3#header_v
-                  %table.table.table-bordered.t{:name => "TV"}
-                    %thead
-                      - for num in 1..50 do
+                        %td{colspan: 4}
+                          %span 文書情報
+                          %i.fa.fa-book{"aria-hidden": "true"}
+                      %tr
+                        %td.col-lg-5.col-sm-5.col-md-5.col-xs-5{style: "padding-bottom: 132px;"}
+                          %p.vertical 登録ID
+                        %td.col-lg-1.col-sm-1.col-md-1.col-xs-1
+                          %p.vertical PDF
+                        %td.col-lg-2.col-sm-2.col-md-2.col-xs-2.hidden_doc
+                          %p.vertical 施設
+                        %td.col-lg-3.col-sm-3.col-md-3.col-xs-3.hidden_doc
+                          %p.vertical 申請書件名
+                  #buttin_l
+                    - plinks = {"#camp" => ["大学","c"],
+                               "#react" => ["原子力","r"],
+                               "#etc"   => ["その他","e"] }
+                    - plinks.each do |href, caption|
+                      %a{:href => "#{href}", class: "btn btn-primary btn-xs plink", id: "#{caption[1]}"}
+                        %span #{caption[0]}
+                        %i.fa.fa-anchor{"aria-hidden": "true"}
+                  #header_c.col-lg-8.col-sm-8.col-md-8.col-xs-8
+                    %table.table.table-bordered.t.tdata.pscroll{:name => "T"}
+                      %thead
                         %tr
-                          %td.col-lg-2.col-sm-2.col-md-2.col-xs-2{:style => "vertical-align: middle;"}
-                            - if num == 1
-                              %button#button.btn.btn-warning.btn-xs{:name => "button", :title => "編集", :type => "button"}
-                                %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
+                          %td{colspan: 47}
+                            %span 関連施設名称
+                            %i.fa.fa-building
+                        %tr
+                          - camp_arrs = ["東京大学","武蔵野工業大学","立教大学","近畿大学","京都大学(KUHFR)", "京都大学(KUR)", "京都大学(KUCA)"]
+                          - reac_arrs = ["水均質臨界実験装置(AHCF)","JRR-1","JRR-2","JRR-3", "高温ガス炉(VHTRC))","材料試験炉(JMTR)","軽水炉(TCA)","高速増殖(もんじゅ)","水性均質(AHR)","三菱臨界(MCA)","東芝教育訓練用(TRR-1)","新型転換(ふげん)","安全性研究(NSRR)","定常臨(STACY)","高中性子束炉(KUHFR)","高温工学試験研究炉(HTTR)","動力試験炉(JPDR)","JMTRC","原子力第１船むつ","常陽","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA","DCA"]
+                          - for camp_arr in camp_arrs do
+                            - if camp_arr == camp_arrs.first
+                              %td#camp{:valigh => "top", :width => "1", style: "padding-right:9px;"}
+                                %p.vertical #{camp_arr}
                             - else
-                              %button.btn.btn-warning.btn-xs.dis{:name => "button", :title => "編集", :type => "button"}
-                                %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
-                          %td.col-lg-2.col-sm-2.col-md-2.col-xs-2{:style => "vertical-align: middle; "}
-                            - if num == 1
-                              %button.lock.btn.btn-default.btn-xs{:name => "button", :title => "ロック解除中", :type => "button"}
-                                %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
+                              %td{:valigh => "top", :width => "1",style: "padding-right:9px;"}
+                                %p.vertical #{camp_arr}
+                          - for reac_arr in reac_arrs do
+                            - if reac_arr == reac_arrs.first
+                              %td#react{:valigh => "top", :width => "1", style: "margin-left:17px; padding-right:9px;"}
+                                %p.vertical #{reac_arr}
                             - else
-                              %button.btn.btn-default.btn-xs.dis{:name => "button", :title => "ロック解除中", :type => "button"}
-                                %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
-                          %td.col-lg-6.col-sm-6.col-md-6.col-xs-6{style: "border-bottom-width: 1px; vertical-align: middle;"}
+                              %td{:valigh => "top", :width => "1",style: "padding-right:9px;"}
+                                %p.vertical #{reac_arr}
+                  #header_r.col-lg-1.col-sm-1.col-md-1.col-xs-1
+                    %table.table.table-bordered.t
+                      %tr
+                        %td{colspan: 2}
+                          %span 管理
+                          %i.fa.fa-cog{"aria-hidden": "true"}
+                      %tr
+                        %td.col-lg-2.col-sm-2.col-md-2.col-xs-2{style: "padding-bottom: 145px;"}
+                          %p.vertical 編集
+                        %td.col-lg-2.col-sm-2.col-md-2.col-xs-2
+                          %p.vertical ロック
+
+                -# データ表示部
+                .row{style: "margin: 0;"}
+                  #data_l.col-lg-3.col-sm-3.col-md-3.col-xs-3
+                    %table.table.table-bordered.t{:name => "TV"}
+                      %thead
+                        %tr
+                          %td.col-lg-5.col-sm-5.col-md-5.col-xs-5{style: "border-bottom-width: 1px; vertical-align: middle; padding-bottom: 13px;"}
                             %samll
-                              #{"2006" + "-" + format("%06d",num)}
-                          %td.col-lg-2.col-sm-2.col-md-2.col-xs-2{:style => "vertical-align: middle; border-bottom-width: 0px"}
+                              %a{href: "#"} 2006-000001
+                          %td.col-lg-1.col-sm-1.col-md-1.col-xs-1.pdf{:style => "vertical-align: middle; border-bottom-width: 0px; padding: 0 11.5px;", id: "col1"}
                             %a{:href => "#"}
-                              - dnum = "#{num+38}安第#{num+235}号"
-                              %i.fa.fa-file-pdf-o{"aria-hidden": "true" ,title: dnum}
-                .col-lg-8.col-sm-9.col-md-9.col-xs-9#data
-                  %table.table.table-bordered.t.tdata{:name => "T", style: "margin-bottom:0;"}
-                    %tbody
-                      - for num in 1..50 do
+                              %i.fa.fa-file-pdf-o{"aria-hidden": "true" ,title: 1}
+                            %br
+                            %a{:href => "#"}
+                              %i.fa.fa-file-pdf-o{"aria-hidden": "true" ,title: 1}
+                            %br
+                            %a{:href => "#"}
+                              %i.fa.fa-file-pdf-o{"aria-hidden": "true" ,title: 1}
+                          %td.col-lg-2.col-sm-2.col-md-2.col-xs-2.hidden_doc{:style => "vertical-align: middle; border-bottom-width: 0px", id: "col1", title: "施設1;施設2;施設3;施設4"}
+                            %span 施設名
+                          %td.col-lg-3.col-sm-3.col-md-3.col-xs-3.hidden_doc{:style => "vertical-align: middle; border-bottom-width: 0px;", id: "col1"}
+                            %span
+                              %p{title: "原子力に関わる", style: "width: 36px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom:0;"} 原子力に関わる
+                        - for num in 1..49 do
+                          %tr
+                            %td.col-lg-5.col-sm-5.col-md-5.col-xs-5{style: "border-bottom-width: 1px; vertical-align: middle; padding-bottom: 13px;"}
+                              %samll
+                                %a{href: "#"}
+                                  #{"2006" + "-" + format("%06d",num+1)}
+                            %td.col-lg-1.col-sm-1.col-md-1.col-xs-1{:style => "vertical-align: middle; border-bottom-width: 0px; padding: 0 11.5px;"}
+                              %a{:href => "#"}
+                                - dnum = "#{num+38}安第#{num+1+235}号"
+                                %i.fa.fa-file-pdf-o{"aria-hidden": "true" ,title: dnum}
+                            %td.col-lg-2.col-sm-2.col-md-2.col-xs-2.pdf.hidden_doc{:style => "vertical-align: middle; border-bottom-width: 0px", id: "col1", title: "施設1;施設2;施設3;施設4"}
+                              %span 施設名
+                            %td.col-lg-3.col-sm-3.col-md-3.col-xs-3.pdf.hidden_doc{:style => "vertical-align: middle; border-bottom-width: 0px;", id: "col1"}
+                              %p{title: "原子力に関わる", style: "width: 36px;  margin-bottom:0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"} 原子力に関わる
+                  #data_c.col-lg-8.col-sm-8.col-md-8.col-xs-8
+                    %table.table.table-bordered.t.tdata{:name => "T"}
+                      %tbody
                         %tr
-                          %td.rep{:width => "1",style: "padding-right: 14px; padding-top:13px; background: #fff;"}
+                          %td.rep.hoge{:width => "1",style: "padding-right: 14px;  background: #fff;", id: "col1"}
                             %i.fa.fa-check{"aria-hidden" => "true"}
                           - for num in 1..37 do
-                            %td.rep{:width => "1", style: "padding-right: 27px; background: #fff;"}
+                            %td.rep.hoge{:width => "1", style: "padding-right: 27px; background: #fff;"}
+                        - for num in 1..49 do
+                          %tr
+                            %td.rep{:width => "1",style: "padding-right: 14px;  background: #fff; padding-bottom: 13px", id: "col1"}
+                              %i.fa.fa-check{"aria-hidden" => "true"}
+                            - for num in 1..37 do
+                              %td.rep{:width => "1", style: "padding-right: 27px; background: #fff;"}
+                  #data_r.col-lg-1.col-sm-1.col-md-1.col-xs-1
+                    %table.table.table-bordered.t{:name => "TV"}
+                      %thead
+                        %tr
+                          %td.col-lg-2.col-sm-2.col-md-2.col-xs-2.hoge
+                            %button#button.btn.btn-warning.btn-xs{:name => "button", :title => "編集", :type => "button"}
+                              %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
+                          %td.col-lg-2.col-sm-2.col-md-2.col-xs-2{:style => "vertical-align: middle; "}
+                            %button.lock.btn.btn-default.btn-xs{:name => "button", :title => "ロック解除中", :type => "button"}
+                              %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
+                        - for num in 1..49 do
+                          %tr
+                            %td.col-lg-2.col-sm-2.col-md-2.col-xs-2
+                              %button.btn.btn-warning.btn-xs.dis{:name => "button", :title => "編集", :type => "button"}
+                                %i.fa.fa-pencil-square-o{"aria-hidden" => "true"}
+                            %td.col-lg-2.col-sm-2.col-md-2.col-xs-2{:style => "vertical-align: middle; "}
+                              %button.btn.btn-default.btn-xs.dis{:name => "button", :title => "ロック解除中", :type => "button"}
+                                %i.fa.fa-unlock-alt{"aria-hidden" => "true"}
 
-              #pagenate.col-md-12.col-xs-12.text-center
-                %nav
-                  %ul.pagination
-                    %li.page-item.disabled
-                      %a.page-link{"aria-label" => "Previ ous", :href => "#"}
-                        %span{"aria-hidden" => "true"} «
-                        %span.sr-only Previous
-                    - for i in 1..5 do
-                      - if i == 1
-                        %li.page-item.active
-                          %a.page-link{:href => "#"}
-                            1
-                            %span.sr-only (current)
-                      - else
-                        %li.page-item
-                          %a.page.link{href: '#'}
-                            #{i}
+                #pagenate.col-lg-7.col-sm-6.col-md-6.col-xs-6.text-right
+                  %nav
+                    %ul.pagination
+                      %li.page-item.disabled
+                        %a.page-link{"aria-label" => "Previ ous", :href => "#"}
+                          %span{"aria-hidden" => "true"} «
+                          %span.sr-only Previous
+                      - for i in 1..5 do
+                        - if i == 1
+                          %li.page-item.active
+                            %a.page-link{:href => "#"}
+                              1
+                              %span.sr-only (current)
+                        - else
+                          %li.page-item
+                            %a.page.link{href: '#'}
+                              #{i}
 
-                    %li.page-item
-                      %a.page-link{"aria-label" => "Next", :href => "#"}
-                        %span{"aria-hidden" => "true"} »
-                        %span.sr-only Next
+                      %li.page-item
+                        %a.page-link{"aria-label" => "Next", :href => "#"}
+                          %span{"aria-hidden" => "true"} »
+                          %span.sr-only Next
+                #dawonload.col-lg-5.col-sm-6.col-md-6.col-xs-6.text-right{style: "margin: 20px 0;"}
+                  %button{class: "btn btn-success", title: "ダウンロード"} ダウンロード
 
-              %form{:action => "/2", :method => "post"}
-                #sample.modal.fade{:role => "dialog",:tabindex=>"-1" }
-                  .modal-dialog
-                    .modal-content
-                      .modal-header
-                        %button.close{"data-dismiss" => "modal", :type => "button"}
-                          %span ×
-                        %h4.modal-title 関連施設の登録
-                      .modal-body
-                        %table.table.table-bordered
-                          %tbody
-                            %tr
-                              %td
-                                %p.vertical
-                                  %b 登録ID
-                              %td 2006-000001
-                            %tr
-                              %td
-                                %p.vertical
-                                  %b 施設名
-                              %td
-                                - for i in 1..5 do
-                                  .col-xs-3
-                                    %h4
-                                      %span.label.label-warning FacilityName #{i}
-                      %br/
-                      .modal-footer
-                        %button.btn.btn-primary{:type => "submit"} OK
-                        %button#aho.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+                %form{:action => "/2", :method => "post"}
+                  #sample.modal.fade{:role => "dialog",:tabindex=>"-1" }
+                    .modal-dialog
+                      .modal-content
+                        .modal-header
+                          %button.close{"data-dismiss" => "modal", :type => "button"}
+                            %span ×
+                          %h4.modal-title 関連施設の登録
+                        .modal-body
+                          %table.table.table-bordered
+                            %tbody
+                              %tr
+                                %td
+                                  %p.vertical
+                                    %b 登録ID
+                                %td 2006-000001
+                              %tr
+                                %td
+                                  %p.vertical
+                                    %b 施設名
+                                %td
+                                  - for i in 1..5 do
+                                    .col-xs-3
+                                      %h4
+                                        %span.label.label-warning FacilityName #{i}
+                        %br/
+                        .modal-footer
+                          %button.btn.btn-primary{:type => "submit"} OK
+                          %button#aho.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
 
   :javascript
-    function $E(name){ return document.getElementById(name); }
+    // データ表示部分のスクロールをそれぞれのヘッダに同期させる.
+    function $E(name){ return document.getElementById(name); };
     function scroll(){
-       $E("header_h").scrollLeft= $E("data").scrollLeft;// データ部のスクロールをヘッダに反映
-       $E("header_v").scrollTop = $E("data").scrollTop;// データ部のスクロールをヘッダに反映
-       }
-    $E("data").onscroll=scroll;
+      // header_cは、data_cの横スクロールに同期
+      $E("header_c").scrollLeft = $E("data_c").scrollLeft;
+      // data_l/data_rは、data_cの縦スクロールに同期
+      $E("data_l").scrollTop    = $E("data_c").scrollTop;
+      $E("data_r").scrollTop    = $E("data_c").scrollTop;
+    }
+    $E("data_c").onscroll=scroll;

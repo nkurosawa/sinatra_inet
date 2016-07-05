@@ -18,8 +18,23 @@
 
     :javascript
       $(document).ready(function(){
+        $(window).load(function(){
+          $("#load").fadeOut("slow").promise().done(function(){
+
+            $('#zentai').fadeIn("slow");
+            $(this).remove();
+            pdf = $(".pdf").outerHeight();
+            cel = $(".hoge").outerHeight();
+            pdf_id  = $(".pdf").attr("id");
+            rep_id  = $(".rep").attr("id");
+
+            if (pdf_id == rep_id){
+              $('.hoge').height(pdf-18);
+            }
+          });//.loadingWrapをフェードアウトさせる
+        });
         // スクロールバー
-        $('#data').perfectScrollbar();
+        $('#data_c').perfectScrollbar();
 
         // 編集ボタンの制御
         $("#button").click(function () {
@@ -37,16 +52,21 @@
           $("#button").prop("disabled", true);
           $(".hoge").prop("disabled", true);
         });
-        $('#inf').click(function(){
-          //$(".now").slideToggle('slow');
-          // $(".now").show( 'slide', {direction:'left'} );
-          $(".now").animate({width: 'toggle'}, 'slow');
+        $(function(){
+          doc_check = $('#inf');
+          if (doc_check.hasClass("noactive")){
+            $(".hidden_doc").css({"cssText": "display: none !important" });
+          }
+          doc_check.click(function(){
+            if (doc_check.hasClass("noactive")){
+              $(this).removeClass("noactive");
+              $(".hidden_doc").slideToggle();
+            }else{
+              $(".hidden_doc").slideToggle('slow');
+            }
+          });
         });
         $('#aho').click(function() { location.reload(); });
-
-        // if ($("#inf:checked").val()) {
-        //   $(".now").animate({width: 'show'}, 'slow');
-        // }
       });
       $(function(){
           $("table.tdata tbody td").hover(function() {
@@ -67,7 +87,7 @@
         $('.plink').click(function(){
           var href= $(this).attr("href");
           targetX = href == "#camp" ? $(href).position().left : $(href).position().left + 17;
-          $('#data').animate({scrollLeft: targetX});
+          $('#data_c').animate({scrollLeft: targetX});
           $(href).toggleClass("active");
           return false;
         });
@@ -92,22 +112,9 @@
          overflow-x:hidden;
          overflow-y:hidden;
          }
-      table.tdata:hover tbody td {
-          color: #000;
-      }
-      table.tdata:hover tbody tr:hover td {
-          background: #cef;
-      }
-      table.tdata:hover tbody tr:hover td {
-          background: #eee;
-      }
-      table.tdata:hover tbody:hover td:hover {
-          opacity: 1;
-          color: #fff;
-          background: #696
-      }
-      .now{
-        display: none;
+
+      .hedden_doc1, .hidden_doc2{
+        display: none !important;
       }
       .vertical{
         -webkit-writing-mode: vertical-rl;
@@ -119,9 +126,7 @@
         text-overflow: ellipsis;
         -ms-writing-mode: tb-rl
       }
-      .hoge{
-        width: 1px;
-      }
+
       .maintable th{
         vertical-align: top;
         width: 120px;
